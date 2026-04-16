@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yesterday's Conversion</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Bebas+Neue&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #0b0b0d;
+    --bg-1: #131317;
+    --bg-2: #1c1c22;
+    --bg-3: #26262e;
+    --line: #33333d;
+    --line-hot: #4a4a57;
+    --ink: #f2f0eb;
+    --ink-dim: #8a8a95;
+    --ink-soft: #c5c3bc;
+    --red: #c8102e;
+    --red-dark: #8b0a1f;
+    --gold: #d4a017;
+    --steel: #6a7682;
+    --caution: #e8a317;
+    --danger: #d23e3e;
+    --alive: #7a9b4f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg-0);
+    min-height: 100vh;
+  }
+  body {
+    font-family: 'Oswald', sans-serif;
+    color: var(--ink);
+    padding: 10px 12px 12px;
+    -webkit-font-smoothing: antialiased;
+    background:
+      linear-gradient(180deg, rgba(200,16,46,0.07) 0%, transparent 300px),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(255,255,255,0.008) 3px, rgba(255,255,255,0.008) 4px),
+      var(--bg-0);
+    letter-spacing: 0.3px;
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto auto auto;
+    gap: 14px;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--red);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 90px; height: 3px;
+    background: var(--gold);
+  }
+  .title-mark {
+    width: 44px; height: 44px;
+    background: var(--red);
+    display: grid; place-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; color: #fff;
+    border: 2px solid #000;
+    box-shadow: 3px 3px 0 #000, 3px 3px 0 2px var(--gold);
+    transform: skewX(-6deg);
+  }
+  .title-text {
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 var(--red-dark);
+  }
+  .subtitle {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 2.5px; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .hdr-stat {
+    text-align: center;
+    padding: 0 14px;
+    border-left: 1px solid var(--line);
+  }
+  .hdr-stat .label {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .hdr-stat .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+  .hdr-stat .value.mcr { color: var(--gold); }
+  .hdr-stat .value.fcr { color: var(--alive); }
+  .hdr-date {
+    text-align: right;
+    padding-left: 14px;
+    border-left: 2px solid var(--gold);
+  }
+  .hdr-date .label {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .hdr-date .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--gold);
+    line-height: 1;
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== CONTROL BAR ===== */
+  .control-bar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .upload {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--red);
+    padding: 6px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .upload.drag { border-color: var(--gold); background: var(--bg-2); }
+  .upload label.btn {
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--red); color: #fff;
+    padding: 6px 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid #000;
+    box-shadow: 2px 2px 0 #000;
+    transition: all .1s ease;
+  }
+  .upload label.btn:hover {
+    background: var(--gold); color: #000;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 #000;
+  }
+  .upload input { display: none; }
+  .upload-status {
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .upload-status .fname {
+    font-family: 'Inconsolata', monospace;
+    color: var(--gold);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 11px;
+  }
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar {
+    display: flex;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .filter-btn {
+    flex: 1;
+    padding: 7px 10px;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .15s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.15;
+  }
+  .filter-btn:last-child { border-right: none; }
+  .filter-btn:hover { color: var(--ink); background: var(--bg-2); }
+  .filter-btn.active {
+    background: var(--red);
+    color: #fff;
+    box-shadow: inset 0 -2px 0 var(--gold);
+  }
+  .filter-btn .count {
+    font-family: 'Inconsolata', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    margin-top: 1px;
+  }
+
+  /* ===== LEADERBOARD ===== */
+  .leaderboard {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+  }
+  .leaderboard-head {
+    display: grid;
+    grid-template-columns: 64px minmax(260px, 360px) 140px 130px 130px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--bg-2);
+    border-bottom: 2px solid var(--red);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+  .leaderboard-head .col-mcr { text-align: right; color: var(--gold); }
+  .leaderboard-head .col-trf { text-align: right; }
+  .leaderboard-head .col-fcr { text-align: right; color: var(--alive); }
+  .leaderboard-head .col-spacer { /* empty right-side spacer */ }
+
+  .row {
+    display: grid;
+    grid-template-columns: 64px minmax(260px, 360px) 140px 130px 130px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+    transition: background .1s ease;
+    position: relative;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--bg-2); }
+  .row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+  .row[data-district="big-south"]::before  { background: var(--red); }
+  .row[data-district="north-side"]::before { background: var(--gold); }
+  .row[data-district="south-side"]::before { background: var(--steel); }
+  .row[data-district="east-side"]::before  { background: var(--alive); }
+
+  .rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--ink-dim);
+    letter-spacing: 1px;
+    line-height: 1;
+    text-align: center;
+  }
+  .rank.top-1 { color: var(--gold); }
+  .rank.top-2 { color: #c5c3bc; }
+  .rank.top-3 { color: #c5823a; }
+
+  .store-info { min-width: 0; }
+  .store-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink);
+    line-height: 1.05;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .store-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+  .store-sub .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    margin-right: 6px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .row[data-district="big-south"]  .store-sub .tag { border-color: var(--red);   color: var(--red);   }
+  .row[data-district="north-side"] .store-sub .tag { border-color: var(--gold);  color: var(--gold);  }
+  .row[data-district="south-side"] .store-sub .tag { border-color: var(--steel); color: var(--steel); }
+  .row[data-district="east-side"]  .store-sub .tag { border-color: var(--alive); color: var(--alive); }
+
+  .mcr {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 1px;
+    text-align: right;
+  }
+  .mcr.tier-elite   { color: var(--gold); }
+  .mcr.tier-strong  { color: #8fb85a; }
+  .mcr.tier-pace    { color: var(--caution); }
+  .mcr.tier-below   { color: #c56a2e; }
+  .mcr.tier-cold    { color: var(--danger); }
+  .mcr.tier-dead    { color: var(--ink-dim); }
+
+  .traffic-cell {
+    text-align: right;
+    font-family: 'Inconsolata', monospace;
+    color: var(--ink-soft);
+  }
+  .traffic-cell .big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--ink);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .traffic-cell .small {
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+  .traffic-cell .small strong {
+    color: var(--ink-soft);
+    font-weight: 700;
+  }
+
+  .fcr {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: 1px;
+    text-align: right;
+    color: var(--alive);
+    opacity: 0.92;
+  }
+  .fcr.dead { color: var(--ink-dim); opacity: 0.6; }
+
+  /* Regional total row at bottom */
+  .totals-row {
+    display: grid;
+    grid-template-columns: 64px minmax(260px, 360px) 140px 130px 130px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #000;
+    border-top: 2px solid var(--gold);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .totals-row::before {
+    content: 'TOTAL';
+    position: absolute;
+    left: 8px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .totals-row .totals-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+  .totals-row .totals-sub {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ===== EMPTY ===== */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--ink-dim);
+    border: 1px dashed var(--line);
+    background: var(--bg-1);
+  }
+  .empty-mark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--red-dark);
+    letter-spacing: 4px;
+  }
+  .empty-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .row, .leaderboard-head, .totals-row {
+      grid-template-columns: 50px 1fr 110px 100px;
+    }
+    .traffic-cell, .leaderboard-head .col-trf, .leaderboard-head .col-spacer { display: none; }
+    h1 { font-size: 28px; }
+    .store-name { font-size: 18px; }
+    .mcr { font-size: 34px; }
+    .fcr { font-size: 24px; }
+  }
+  @media (max-width: 700px) {
+    header { grid-template-columns: auto 1fr; }
+    .hdr-stat, .hdr-date { display: none; }
+    .filter-bar { flex-wrap: wrap; }
+    .filter-btn { flex: 1 1 50%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-mark">B</div>
+    <div class="title-text">
+      <h1>Yesterday's Conversion</h1>
+      <div class="subtitle">Blufox · MCR + FCR Leaderboard</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="label">Traffic</div>
+      <div class="value" id="hdrTraffic">—</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="label">Mobiles</div>
+      <div class="value" id="hdrMobile">—</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="label">Regional MCR</div>
+      <div class="value mcr" id="hdrMcr">—</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="label">Regional FCR</div>
+      <div class="value fcr" id="hdrFcr">—</div>
+    </div>
+    <div class="hdr-date">
+      <div class="label">Report Date</div>
+      <div class="value" id="dateValue">— PENDING —</div>
+    </div>
+  </header>
+
+  <div class="control-bar">
+    <div class="upload" id="dropzone">
+      <label for="fileInput" class="btn">⬆ XLSX</label>
+      <div class="upload-status" id="uploadStatus">Drop file or browse</div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-filter="ALL">All Districts<span class="count" id="count-ALL">— STORES</span></button>
+      <button class="filter-btn" data-filter="The Big South">Big South<span class="count" id="count-big-south">—</span></button>
+      <button class="filter-btn" data-filter="The North Side">North Side<span class="count" id="count-north-side">—</span></button>
+      <button class="filter-btn" data-filter="The South Side">South Side<span class="count" id="count-south-side">—</span></button>
+      <button class="filter-btn" data-filter="The East Side">East Side<span class="count" id="count-east-side">—</span></button>
+    </div>
+  </div>
+
+  <div id="output">
+    <div class="empty">
+      <div class="empty-mark">◢◤</div>
+      <div class="empty-text">Awaiting Upload</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const DISTRICT_MAP = {
+    'Matthew Brooks':     { name: 'The Big South',  cls: 'big-south',  key: 'big-south',  tag: 'BS' },
+    'Imaad Dhorajiwala':  { name: 'The North Side', cls: 'north-side', key: 'north-side', tag: 'NS' },
+    'Juan Carrillo':      { name: 'The South Side', cls: 'south-side', key: 'south-side', tag: 'SS' },
+    'Jacob Cabrales':     { name: 'The East Side',  cls: 'east-side',  key: 'east-side',  tag: 'ES' }
+  };
+  const DISTRICT_ORDER = ['The Big South', 'The North Side', 'The South Side', 'The East Side'];
+
+  let allStores = [];  // flat list, each entry has district info attached
+  let currentFilter = 'ALL';
+
+  const fileInput = document.getElementById('fileInput');
+  const dropzone = document.getElementById('dropzone');
+  const uploadStatus = document.getElementById('uploadStatus');
+  const output = document.getElementById('output');
+  const dateValue = document.getElementById('dateValue');
+  const filterBar = document.getElementById('filterBar');
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+  });
+  ['dragenter','dragover'].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('drag'); })
+  );
+  ['dragleave','drop'].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove('drag'); })
+  );
+  dropzone.addEventListener('drop', e => {
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+
+  filterBar.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderOutput();
+    });
+  });
+
+  function handleFile(file) {
+    uploadStatus.innerHTML = `Loaded: <span class="fname">${file.name}</span>`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array', cellDates: true });
+        const ws = wb.Sheets['Summary'] || wb.Sheets[wb.SheetNames[0]];
+        parseSheet(ws);
+        renderOutput();
+      } catch (err) {
+        console.error(err);
+        output.innerHTML = `<div class="empty"><div class="empty-mark">⚠</div><div class="empty-text">Could not read that file</div></div>`;
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function parseSheet(ws) {
+    allStores = [];
+    let reportDate = '';
+    for (let row = 1; row <= 10 && !reportDate; row++) {
+      for (let col of ['P','AJ','C','AI']) {
+        const ref = col + row;
+        const cell = ws[ref];
+        if (cell && cell.t === 'd' && cell.v instanceof Date) {
+          reportDate = formatDate(cell.v);
+          break;
+        }
+      }
+    }
+    dateValue.textContent = reportDate || 'YESTERDAY';
+
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    const maxRow = range.e.r + 1;
+
+    for (let row = 10; row <= maxRow; row++) {
+      const rd = getCell(ws, 'B' + row);
+      const dm = getCell(ws, 'C' + row);
+      const loc = getCell(ws, 'D' + row);
+      const yTraffic = numCell(ws, 'Q' + row);
+      const yMobile  = numCell(ws, 'X' + row);
+      const yRgus    = numCell(ws, 'P' + row);
+
+      if (!rd || !dm || !loc) continue;
+      if (!String(rd).toLowerCase().includes('bilbrey')) continue;
+
+      const info = DISTRICT_MAP[String(dm).trim()];
+      if (!info) continue;
+
+      allStores.push({
+        name: String(loc).trim(),
+        dm: String(dm).trim(),
+        district: info.name,
+        districtCls: info.cls,
+        districtTag: info.tag,
+        traffic: yTraffic,
+        mobile: yMobile,
+        rgus: yRgus,
+        mcr: yTraffic > 0 ? (yMobile / yTraffic) * 100 : 0,
+        fcr: yTraffic > 0 ? (yRgus / yTraffic) * 100 : 0,
+        hasTraffic: yTraffic > 0
+      });
+    }
+  }
+
+  function getCell(ws, ref) {
+    const cell = ws[ref];
+    return cell ? cell.v : null;
+  }
+  function numCell(ws, ref) {
+    const cell = ws[ref];
+    if (!cell || cell.v == null) return 0;
+    const n = Number(cell.v);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function renderOutput() {
+    if (!allStores.length) return;
+
+    // Update filter counts
+    const countByDistrict = {};
+    allStores.forEach(s => {
+      countByDistrict[s.district] = (countByDistrict[s.district] || 0) + 1;
+    });
+    DISTRICT_ORDER.forEach(dn => {
+      const key = Object.values(DISTRICT_MAP).find(v => v.name === dn)?.key;
+      const el = document.getElementById('count-' + key);
+      if (el) el.textContent = countByDistrict[dn] ? `${countByDistrict[dn]} STORES` : '—';
+    });
+    document.getElementById('count-ALL').textContent = `${allStores.length} STORES`;
+
+    // Filter + sort
+    const filtered = currentFilter === 'ALL'
+      ? allStores
+      : allStores.filter(s => s.district === currentFilter);
+
+    const sorted = [...filtered].sort((a, b) => b.mcr - a.mcr);
+
+    // Region totals
+    let regionTraffic = 0, regionMobile = 0, regionRgus = 0;
+    filtered.forEach(s => {
+      regionTraffic += s.traffic;
+      regionMobile += s.mobile;
+      regionRgus += s.rgus;
+    });
+    const regionMCR = regionTraffic > 0 ? (regionMobile / regionTraffic) * 100 : 0;
+    const regionFCR = regionTraffic > 0 ? (regionRgus / regionTraffic) * 100 : 0;
+
+    document.getElementById('hdrTraffic').textContent = regionTraffic.toLocaleString();
+    document.getElementById('hdrMobile').textContent = regionMobile.toLocaleString();
+    document.getElementById('hdrMcr').textContent = regionMCR.toFixed(2) + '%';
+    document.getElementById('hdrFcr').textContent = regionFCR.toFixed(2) + '%';
+
+    // Build the leaderboard
+    if (!sorted.length) {
+      output.innerHTML = `<div class="empty"><div class="empty-mark">◢◤</div><div class="empty-text">No data for this district</div></div>`;
+      return;
+    }
+
+    const totalsLabel = currentFilter === 'ALL' ? 'Regional Totals' : currentFilter;
+    const totalsMcrTier = regionTraffic > 0 ? tierByMcr(regionMCR) : 'tier-dead';
+
+    const rows = sorted.map((s, idx) => {
+      const rankCls = idx === 0 ? 'top-1' : idx === 1 ? 'top-2' : idx === 2 ? 'top-3' : '';
+      const mcrDisplay = s.hasTraffic ? `${s.mcr.toFixed(2)}%` : '—';
+      const fcrDisplay = s.hasTraffic ? `${s.fcr.toFixed(2)}%` : '—';
+      const mcrTier = tierFor(s);
+      const fcrDeadCls = s.hasTraffic ? '' : 'dead';
+      return `
+        <div class="row" data-district="${s.districtCls}">
+          <div class="rank ${rankCls}">${String(idx + 1).padStart(2, '0')}</div>
+          <div class="store-info">
+            <div class="store-name">${escape(s.name)}</div>
+            <div class="store-sub"><span class="tag">${s.districtTag}</span>${escape(s.dm)}</div>
+          </div>
+          <div class="mcr ${mcrTier}">${mcrDisplay}</div>
+          <div class="traffic-cell">
+            <div class="big">${s.traffic.toLocaleString()}</div>
+            <div class="small">MOB <strong>${s.mobile}</strong> · RGU <strong>${s.rgus}</strong></div>
+          </div>
+          <div class="fcr ${fcrDeadCls}">${fcrDisplay}</div>
+          <div></div>
+        </div>
+      `;
+    }).join('');
+
+    output.innerHTML = `
+      <div class="leaderboard">
+        <div class="leaderboard-head">
+          <div>Rank</div>
+          <div>Store</div>
+          <div class="col-mcr">MCR</div>
+          <div class="col-trf">Traffic</div>
+          <div class="col-fcr">FCR</div>
+          <div class="col-spacer"></div>
+        </div>
+        ${rows}
+        <div class="totals-row">
+          <div></div>
+          <div>
+            <div class="totals-label">${escape(totalsLabel)}</div>
+            <div class="totals-sub">${sorted.length} Stores</div>
+          </div>
+          <div class="mcr ${totalsMcrTier}">${regionTraffic > 0 ? regionMCR.toFixed(2) + '%' : '—'}</div>
+          <div class="traffic-cell">
+            <div class="big">${regionTraffic.toLocaleString()}</div>
+            <div class="small">MOB <strong>${regionMobile}</strong> · RGU <strong>${regionRgus}</strong></div>
+          </div>
+          <div class="fcr ${regionTraffic > 0 ? '' : 'dead'}">${regionTraffic > 0 ? regionFCR.toFixed(2) + '%' : '—'}</div>
+          <div></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function tierFor(s) {
+    if (!s.hasTraffic) return 'tier-dead';
+    return tierByMcr(s.mcr);
+  }
+  function tierByMcr(m) {
+    if (m >= 15) return 'tier-elite';
+    if (m >= 10) return 'tier-strong';
+    if (m >= 7)  return 'tier-pace';
+    if (m >= 4)  return 'tier-below';
+    return 'tier-cold';
+  }
+  function formatDate(d) {
+    if (!(d instanceof Date)) return '';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+  }
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+</script>
+</body>
+</html>
