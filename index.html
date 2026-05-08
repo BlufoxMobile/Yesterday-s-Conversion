@@ -14,12 +14,10 @@
     --panel: #0c1525;
     --panel-2: #0d1a2e;
     --panel-3: #1a2744;
-    --panel-hi: #1a2540;
     --line: #1a2744;
     --line-soft: #14223a;
     --orange: #e67e22;
     --orange-soft: rgba(230,126,34,0.27);
-    --orange-faint: rgba(230,126,34,0.13);
     --ink: #ffffff;
     --ink-soft: #8899aa;
     --ink-dim: #5a7a9a;
@@ -29,16 +27,9 @@
     --warn-bg: rgba(243,156,18,0.13);
     --bad: #e74c3c;
     --bad-bg: rgba(231,76,60,0.13);
-    --yellow: #f1c40f;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
   body {
     background:
       radial-gradient(1200px 600px at 80% -100px, rgba(230,126,34,0.08), transparent 60%),
@@ -46,321 +37,129 @@
       var(--bg);
   }
 
-  /* ========== HEADER ========== */
+  /* HEADER */
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 22px;
     background: linear-gradient(180deg, #0d1526 0%, #0a1120 100%);
     border-bottom: 3px solid var(--orange);
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    position: sticky; top: 0; z-index: 50;
   }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .logo-circle {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: var(--panel-3);
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid var(--orange);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-circle { width: 44px; height: 44px; border-radius: 50%; background: var(--panel-3); display: flex; align-items: center; justify-content: center; border: 2px solid var(--orange); overflow: hidden; flex-shrink: 0; }
   .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
   .brand-block { line-height: 1.1; }
-  .brand-name {
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
-    color: var(--ink);
-  }
+  .brand-name { font-size: 16px; font-weight: 900; letter-spacing: 1.2px; color: var(--ink); }
   .brand-name .accent { color: var(--orange); }
-  .brand-sub {
-    font-size: 10px;
-    color: var(--orange);
-    font-weight: 800;
-    letter-spacing: 2.5px;
-    margin-top: 4px;
-  }
+  .brand-sub { font-size: 9px; color: var(--orange); font-weight: 800; letter-spacing: 2.2px; margin-top: 3px; }
 
   .header-center { text-align: center; flex: 1; }
-  .header-center-sub {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 3px;
-    font-weight: 700;
-  }
-  .header-center-title {
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    margin-top: 4px;
-  }
+  .header-center-sub { font-size: 10px; color: var(--ink-soft); letter-spacing: 3px; font-weight: 700; }
+  .header-center-title { font-size: 22px; font-weight: 900; letter-spacing: 4px; margin-top: 2px; }
 
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .live-badge {
-    display: flex; align-items: center; gap: 6px;
-    background: #0d2a0d;
-    border: 1px solid var(--good);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 12px; font-weight: 700;
-    color: var(--good);
-    letter-spacing: 1.5px;
-  }
-  .live-badge .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--good);
-    animation: pulse 1.6s ease-in-out infinite;
-  }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .live-badge { display: flex; align-items: center; gap: 5px; background: #0d2a0d; border: 1px solid var(--good); border-radius: 16px; padding: 3px 11px; font-size: 11px; font-weight: 700; color: var(--good); letter-spacing: 1.3px; }
+  .live-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); animation: pulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-  .date-badge {
-    background: var(--panel-3);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 13px;
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .refresh-btn {
-    background: var(--orange);
-    color: #0a1120;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    font-family: inherit;
-    transition: transform 0.1s, box-shadow 0.15s;
-  }
+  .date-badge { background: var(--panel-3); border: 1px solid var(--line); border-radius: 16px; padding: 3px 11px; font-size: 12px; color: var(--ink); font-weight: 600; }
+  .refresh-btn { background: var(--orange); color: #0a1120; border: none; border-radius: 16px; padding: 4px 13px; font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; font-family: inherit; transition: transform 0.1s, box-shadow 0.15s; }
   .refresh-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px var(--orange-soft); }
-  .refresh-btn:active { transform: translateY(0); }
-  .refresh-btn.spinning::before {
-    content: '';
-    display: inline-block;
-    width: 10px; height: 10px;
-    border: 2px solid #0a1120;
-    border-top-color: transparent;
-    border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: -1px;
-    animation: spin 0.7s linear infinite;
-  }
+  .refresh-btn.spinning::before { content: ''; display: inline-block; width: 9px; height: 9px; border: 2px solid #0a1120; border-top-color: transparent; border-radius: 50%; margin-right: 5px; vertical-align: -1px; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ========== PAGE ========== */
-  .page-body {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 26px 24px 60px;
-  }
-
-  .section-title {
-    font-size: 13px;
-    color: var(--ink-soft);
-    letter-spacing: 3px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .section-title .accent { color: var(--orange); }
-
-  .loading, .error-msg {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 36px 24px;
-    text-align: center;
-    color: var(--ink-soft);
-    font-size: 15px;
-  }
+  /* PAGE */
+  .page-body { max-width: 1500px; margin: 0 auto; padding: 12px 18px 16px; }
+  .loading, .error-msg { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 32px 24px; text-align: center; color: var(--ink-soft); font-size: 14px; }
   .error-msg { color: var(--bad); border-color: var(--bad-bg); }
-  .loading .spinner {
-    display: inline-block;
-    width: 22px; height: 22px;
-    border: 3px solid var(--line);
-    border-top-color: var(--orange);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    vertical-align: -5px;
-    margin-right: 10px;
-  }
+  .loading .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid var(--line); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: -4px; margin-right: 8px; }
 
-  /* ========== KPI STRIP ========== */
-  .kpi-strip {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 14px;
-    margin-bottom: 28px;
-  }
-  .kpi {
-    background: linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 18px 18px 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 3px;
-    background: var(--orange);
-    opacity: 0.7;
-  }
-  .kpi-label {
-    font-size: 10.5px;
-    color: var(--ink-soft);
-    letter-spacing: 2px;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .kpi-value {
-    font-size: 30px;
-    font-weight: 900;
-    color: var(--ink);
-    letter-spacing: -0.5px;
-    line-height: 1;
-  }
+  /* KPI STRIP - compact */
+  .kpi-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
+  .kpi { background: linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px 9px; position: relative; overflow: hidden; }
+  .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--orange); opacity: 0.7; }
+  .kpi-label { font-size: 9.5px; color: var(--ink-soft); letter-spacing: 1.6px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+  .kpi-value { font-size: 22px; font-weight: 900; color: var(--ink); letter-spacing: -0.4px; line-height: 1; }
   .kpi-value.orange { color: var(--orange); }
   .kpi-value.good { color: var(--good); }
   .kpi-value.warn { color: var(--warn); }
-  .kpi-sub {
-    font-size: 11px;
-    color: var(--ink-dim);
-    margin-top: 6px;
-  }
+  .kpi-value.bad { color: var(--bad); }
 
-  /* ========== TABLE ========== */
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    overflow: hidden;
+  /* DISTRICT TABS */
+  .district-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .dt-tab {
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink-soft);
+    padding: 7px 13px; border-radius: 8px; font-family: inherit; font-size: 12px;
+    font-weight: 700; cursor: pointer; letter-spacing: 0.4px;
+    display: inline-flex; align-items: baseline; gap: 7px; transition: all 0.15s;
   }
-  .panel-head {
-    padding: 16px 20px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%);
-  }
-  .panel-title {
-    font-size: 15px; font-weight: 800;
-    letter-spacing: 1.5px;
-    color: var(--ink);
-  }
-  .panel-meta { font-size: 11.5px; color: var(--ink-soft); }
+  .dt-tab:hover { border-color: var(--orange); color: var(--ink); }
+  .dt-tab.active { background: var(--orange); color: #0a1120; border-color: var(--orange); }
+  .dt-tab .dt-meta { font-size: 10px; font-weight: 700; opacity: 0.7; letter-spacing: 0.3px; text-transform: uppercase; }
+  .dt-tab.active .dt-meta { opacity: 0.85; }
+
+  /* TWO-COLUMN STORE TABLES */
+  .table-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .panel-head { padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%); }
+  .panel-title { font-size: 11px; font-weight: 800; letter-spacing: 1.4px; color: var(--ink); }
+  .panel-meta { font-size: 10px; color: var(--ink-soft); }
   .panel-meta .accent { color: var(--orange); font-weight: 700; }
 
-  .store-table { width: 100%; border-collapse: collapse; }
+  .store-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .store-table th {
-    text-align: left;
-    padding: 12px 16px;
-    background: var(--panel-2);
-    border-bottom: 2px solid var(--orange);
-    color: var(--ink-soft);
-    font-size: 10.5px;
-    letter-spacing: 1.5px;
-    font-weight: 800;
-    text-transform: uppercase;
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
+    text-align: left; padding: 7px 8px;
+    background: var(--panel-2); border-bottom: 2px solid var(--orange);
+    color: var(--ink-soft); font-size: 9.5px; letter-spacing: 1.2px;
+    font-weight: 800; text-transform: uppercase;
+    cursor: pointer; user-select: none; white-space: nowrap;
   }
   .store-table th.num { text-align: right; }
-  .store-table th .arrow { display: inline-block; margin-left: 4px; opacity: 0.5; font-size: 9px; }
+  .store-table th .arrow { display: inline-block; margin-left: 3px; opacity: 0.4; font-size: 8px; }
   .store-table th.sorted .arrow { opacity: 1; color: var(--orange); }
   .store-table th:hover { color: var(--ink); }
-
   .store-table td {
-    padding: 13px 16px;
-    border-bottom: 1px solid var(--line-soft);
-    font-size: 14px;
-    color: var(--ink);
+    padding: 6px 8px; border-bottom: 1px solid var(--line-soft);
+    font-size: 12.5px; color: var(--ink); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
   }
   .store-table tr:last-child td { border-bottom: none; }
   .store-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .store-table tr:hover td { background: rgba(255,255,255,0.015); }
 
-  .rank-cell {
-    width: 50px;
-    color: var(--ink-dim);
-    font-size: 13px;
-    font-weight: 700;
-  }
-  .rank-cell.top { color: var(--orange); }
+  .store-table .col-rank { width: 30px; }
+  .store-table .col-store { width: auto; }
+  .store-table .col-num { width: 56px; }
+  .store-table .col-pct { width: 64px; }
 
+  .rank-cell { color: var(--ink-dim); font-size: 11px; font-weight: 700; }
+  .rank-cell.top { color: var(--orange); }
   .store-name { font-weight: 700; }
 
-  .pct-pill {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 12.5px;
-    font-weight: 800;
-    min-width: 64px;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
+  .pct-pill { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 800; min-width: 50px; text-align: center; font-variant-numeric: tabular-nums; }
   .pct-pill.good { background: var(--good-bg); color: var(--good); }
   .pct-pill.warn { background: var(--warn-bg); color: var(--warn); }
   .pct-pill.bad  { background: var(--bad-bg);  color: var(--bad); }
   .pct-pill.muted { background: var(--line); color: var(--ink-dim); }
 
-  .total-row td {
-    background: var(--panel-2);
-    border-top: 2px solid var(--orange);
-    font-weight: 800;
-    color: var(--orange);
-    font-size: 14.5px;
-    letter-spacing: 0.5px;
-  }
-  .total-row td.num { color: var(--ink); }
-
-  .legend {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    margin-top: 14px;
-    font-size: 11.5px;
-    color: var(--ink-soft);
-  }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-swatch { width: 10px; height: 10px; border-radius: 3px; }
-
-  .footer {
-    text-align: center;
-    color: var(--ink-dim);
-    font-size: 11.5px;
-    margin-top: 22px;
-    letter-spacing: 0.5px;
-  }
+  .footer { text-align: center; color: var(--ink-dim); font-size: 10.5px; margin-top: 10px; letter-spacing: 0.4px; }
   .footer a { color: var(--orange); text-decoration: none; }
   .footer a:hover { text-decoration: underline; }
 
-  /* ========== RESPONSIVE ========== */
+  /* RESPONSIVE */
+  @media (max-width: 1100px) { .header-center { display: none; } .header-center-title { font-size: 16px; } }
   @media (max-width: 900px) {
-    .header { padding: 10px 14px; flex-wrap: wrap; gap: 10px; }
-    .header-center { display: none; }
-    .header-center-title { font-size: 18px; }
-    .brand-name { font-size: 15px; }
-    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-    .kpi-value { font-size: 24px; }
-    .page-body { padding: 18px 12px 40px; }
-    .store-table th, .store-table td { padding: 10px 10px; font-size: 12.5px; }
-    .store-table th { font-size: 9.5px; letter-spacing: 1px; }
-    .rank-cell { width: 36px; }
+    .table-grid { grid-template-columns: 1fr; }
+    .kpi-strip { gap: 6px; }
+    .kpi { padding: 8px 10px 7px; }
+    .kpi-value { font-size: 18px; }
+    .page-body { padding: 10px 10px 16px; }
   }
-  @media (max-width: 540px) {
-    .kpi-strip { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 640px) {
+    .kpi-strip { grid-template-columns: 1fr 1fr 1fr; }
     .header-right .date-badge { display: none; }
-    .store-table th:nth-child(4),
-    .store-table td:nth-child(4) { display: none; } /* hide Mobile col on tiny */
+    .store-table th, .store-table td { padding: 6px 6px; font-size: 11.5px; }
+    .store-table .col-num { width: 44px; }
+    .store-table .col-pct { width: 52px; }
   }
 </style>
 </head>
@@ -390,6 +189,7 @@
   <div id="errorMsg" class="error-msg" style="display:none"></div>
 
   <div id="content" style="display:none">
+
     <div class="kpi-strip">
       <div class="kpi"><div class="kpi-label">Yesterday Traffic</div><div class="kpi-value" id="kTraffic">—</div></div>
       <div class="kpi"><div class="kpi-label">Mobile Sold</div><div class="kpi-value orange" id="kMobile">—</div></div>
@@ -398,39 +198,59 @@
       <div class="kpi"><div class="kpi-label">T-Chart % of Traffic</div><div class="kpi-value" id="kTChartPct">—</div></div>
     </div>
 
-    <div class="section-title">STORE <span class="accent">PERFORMANCE</span></div>
+    <div class="district-tabs" id="districtTabs">
+      <button class="dt-tab active" data-key="all">All <span class="dt-meta">24 STORES</span></button>
+      <button class="dt-tab" data-key="big-south">Big South <span class="dt-meta">M. BROOKS</span></button>
+      <button class="dt-tab" data-key="north-side">North Side <span class="dt-meta">I. DHORAJIWALA</span></button>
+      <button class="dt-tab" data-key="south-side">South Side <span class="dt-meta">J. CARRILLO</span></button>
+      <button class="dt-tab" data-key="east-side">East Side <span class="dt-meta">J. CABRALES</span></button>
+    </div>
 
-    <div class="panel">
-      <div class="panel-head">
-        <div class="panel-title">YESTERDAY'S CONVERSION BY STORE</div>
-        <div class="panel-meta"><span class="accent" id="storeCount">—</span> stores</div>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="store-table" id="storeTable">
+    <div class="table-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">CONVERSION BY STORE</div>
+          <div class="panel-meta"><span class="accent" id="storeCountL">—</span> stores</div>
+        </div>
+        <table class="store-table" id="storeTableL">
           <thead>
             <tr>
-              <th data-key="rank" class="sorted">#<span class="arrow">▲</span></th>
-              <th data-key="store">STORE<span class="arrow">▲</span></th>
-              <th data-key="traffic" class="num">TRAFFIC<span class="arrow">▲</span></th>
-              <th data-key="mobile" class="num">MOBILE<span class="arrow">▲</span></th>
-              <th data-key="mcr" class="num">MCR %<span class="arrow">▲</span></th>
-              <th data-key="tcharts" class="num">T-CHARTS<span class="arrow">▲</span></th>
-              <th data-key="tpct" class="num">T-CHART %<span class="arrow">▲</span></th>
+              <th class="col-rank" data-key="rank">#<span class="arrow">&#9650;</span></th>
+              <th class="col-store" data-key="store">STORE<span class="arrow">&#9650;</span></th>
+              <th class="col-num num" data-key="traffic">TRF<span class="arrow">&#9650;</span></th>
+              <th class="col-num num" data-key="mobile">MOB<span class="arrow">&#9650;</span></th>
+              <th class="col-pct num sorted" data-key="mcr">MCR%<span class="arrow">&#9660;</span></th>
+              <th class="col-num num" data-key="tcharts">T-CH<span class="arrow">&#9650;</span></th>
+              <th class="col-pct num" data-key="tpct">T-CH%<span class="arrow">&#9650;</span></th>
             </tr>
           </thead>
-          <tbody id="storeBody"></tbody>
+          <tbody id="storeBodyL"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">CONVERSION BY STORE</div>
+          <div class="panel-meta"><span class="accent" id="storeCountR">—</span> stores</div>
+        </div>
+        <table class="store-table" id="storeTableR">
+          <thead>
+            <tr>
+              <th class="col-rank" data-key="rank">#<span class="arrow">&#9650;</span></th>
+              <th class="col-store" data-key="store">STORE<span class="arrow">&#9650;</span></th>
+              <th class="col-num num" data-key="traffic">TRF<span class="arrow">&#9650;</span></th>
+              <th class="col-num num" data-key="mobile">MOB<span class="arrow">&#9650;</span></th>
+              <th class="col-pct num sorted" data-key="mcr">MCR%<span class="arrow">&#9660;</span></th>
+              <th class="col-num num" data-key="tcharts">T-CH<span class="arrow">&#9650;</span></th>
+              <th class="col-pct num" data-key="tpct">T-CH%<span class="arrow">&#9650;</span></th>
+            </tr>
+          </thead>
+          <tbody id="storeBodyR"></tbody>
         </table>
       </div>
     </div>
 
-    <div class="legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--good)"></div>MCR &ge; 10% / T-Chart % &ge; 8%</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--warn)"></div>MCR 6-10% / T-Chart % 4-8%</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:var(--bad)"></div>MCR &lt; 6% / T-Chart % &lt; 4%</div>
-    </div>
-
     <div class="footer">
-      Sales data: <a href="https://blufoxmobile.github.io/Daily-Sales-Report/" target="_blank">Daily Sales Report</a>
+      Sales: <a href="https://blufoxmobile.github.io/Daily-Sales-Report/" target="_blank">Daily Sales Report</a>
       &middot; T-Charts: <a href="https://blufoxmobile.github.io/T-Sheet-Submissions/" target="_blank">T-Sheet Submissions</a>
       &middot; Last updated <span id="lastUpdated">—</span>
     </div>
@@ -438,55 +258,28 @@
 </div>
 
 <script>
-// ============================================================
-//  CONFIG
-// ============================================================
 const SALES_REPORT_URL = 'https://raw.githubusercontent.com/BlufoxMobile/Daily-Sales-Report/main/data/Sales%20Report.xlsx';
 const TSHEET_API_URL   = 'https://script.google.com/macros/s/AKfycbyQaa1yvggLJuw5dcme74vwAW3hSB3BvzCK40IhLThy-F8KZDFOF6gcyl8psNMd3yD-Cg/exec';
 
-// 24 stores in our district / scope. Filter Zero tab to just these.
 const MY_STORES = ['Bourbonnais','Burbank','Calumet City','Cicero','Dekalb','Elkhart','Evanston','Evergreen Park','Frankfort','Glenview','Greeneville','Hammond','Johnson City','Kildeer','Michigan City','Oak Ridge','Round Lake Beach','Schererville','South Bend','South Knoxville','South Skokie','Tinley Park','Uptown','Valparaiso'];
 
-// Map sales-report store name -> the name used in T-Sheet submissions store field.
-// Most are "<store> Xfinity Store"; South Skokie -> Skokie is the only oddball.
 const TSHEET_NAME_BY_STORE = {
-  'Bourbonnais':'Bourbonnais Xfinity Store',
-  'Burbank':'Burbank Xfinity Store',
-  'Calumet City':'Calumet City Xfinity Store',
-  'Cicero':'Cicero Xfinity Store',
-  'Dekalb':'Dekalb Xfinity Store',
-  'Elkhart':'Elkhart Xfinity Store',
-  'Evanston':'Evanston Xfinity Store',
-  'Evergreen Park':'Evergreen Park Xfinity Store',
-  'Frankfort':'Frankfort Xfinity Store',
-  'Glenview':'Glenview Xfinity Store',
-  'Greeneville':'Greeneville Xfinity Store',
-  'Hammond':'Hammond Xfinity Store',
-  'Johnson City':'Johnson City Xfinity Store',
-  'Kildeer':'Kildeer Xfinity Store',
-  'Michigan City':'Michigan City Xfinity Store',
-  'Oak Ridge':'Oak Ridge Xfinity Store',
-  'Round Lake Beach':'Round Lake Beach Xfinity Store',
-  'Schererville':'Schererville Xfinity Store',
-  'South Bend':'South Bend Xfinity Store',
-  'South Knoxville':'South Knoxville Xfinity Store',
-  'South Skokie':'Skokie Xfinity Store',
-  'Tinley Park':'Tinley Park Xfinity Store',
-  'Uptown':'Uptown Xfinity Store',
-  'Valparaiso':'Valparaiso Xfinity Store'
+  'Bourbonnais':'Bourbonnais Xfinity Store','Burbank':'Burbank Xfinity Store','Calumet City':'Calumet City Xfinity Store','Cicero':'Cicero Xfinity Store','Dekalb':'Dekalb Xfinity Store','Elkhart':'Elkhart Xfinity Store','Evanston':'Evanston Xfinity Store','Evergreen Park':'Evergreen Park Xfinity Store','Frankfort':'Frankfort Xfinity Store','Glenview':'Glenview Xfinity Store','Greeneville':'Greeneville Xfinity Store','Hammond':'Hammond Xfinity Store','Johnson City':'Johnson City Xfinity Store','Kildeer':'Kildeer Xfinity Store','Michigan City':'Michigan City Xfinity Store','Oak Ridge':'Oak Ridge Xfinity Store','Round Lake Beach':'Round Lake Beach Xfinity Store','Schererville':'Schererville Xfinity Store','South Bend':'South Bend Xfinity Store','South Knoxville':'South Knoxville Xfinity Store','South Skokie':'Skokie Xfinity Store','Tinley Park':'Tinley Park Xfinity Store','Uptown':'Uptown Xfinity Store','Valparaiso':'Valparaiso Xfinity Store'
 };
 
-// ============================================================
-//  STATE
-// ============================================================
-let rows = [];     // [{store, traffic, mobile, mcr, tcharts, tpct, rank}, ...]
-let yesterdayDate = null; // Date object
-let sortKey = 'mcr';
-let sortDir = -1;  // -1 desc, 1 asc
+const DISTRICTS = [
+  { key:'big-south',  name:'Big South',  dm:'Matthew Brooks',     stores:['Greeneville','Johnson City','Oak Ridge','South Knoxville'] },
+  { key:'north-side', name:'North Side', dm:'Imaad Dhorajiwala',  stores:['Evanston','Glenview','Kildeer','Round Lake Beach','South Skokie','Uptown'] },
+  { key:'south-side', name:'South Side', dm:'Juan Carrillo',      stores:['Bourbonnais','Burbank','Calumet City','Dekalb','Evergreen Park','Frankfort','Tinley Park'] },
+  { key:'east-side',  name:'East Side',  dm:'Jacob Cabrales',     stores:['Cicero','Elkhart','Hammond','Michigan City','Schererville','South Bend','Valparaiso'] }
+];
 
-// ============================================================
-//  HELPERS
-// ============================================================
+let rows = [];
+let yesterdayDate = null;
+let sortKey = 'mcr';
+let sortDir = -1;
+let currentDistrict = 'all';
+
 function fmtDate(d) {
   if (!d) return '—';
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -500,31 +293,12 @@ function fmtTime(d) {
 }
 function pctClass(p, type) {
   if (p == null || isNaN(p)) return 'muted';
-  // type === 'mcr' uses 6/10 thresholds; type === 'tpct' uses 4/8 thresholds
-  if (type === 'tpct') {
-    if (p >= 8) return 'good';
-    if (p >= 4) return 'warn';
-    return 'bad';
-  }
-  if (p >= 10) return 'good';
-  if (p >= 6) return 'warn';
-  return 'bad';
+  if (type === 'tpct') { if (p >= 8) return 'good'; if (p >= 4) return 'warn'; return 'bad'; }
+  if (p >= 10) return 'good'; if (p >= 6) return 'warn'; return 'bad';
 }
-function pctText(p) {
-  if (p == null || isNaN(p)) return '—';
-  return p.toFixed(1) + '%';
-}
+function pctText(p) { if (p == null || isNaN(p)) return '—'; return p.toFixed(1) + '%'; }
+function yesterdayISO() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0,10); }
 
-// Calendar yesterday in local time, ISO yyyy-mm-dd
-function yesterdayISO() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0,10);
-}
-
-// ============================================================
-//  LOAD ZERO TAB FROM SALES REPORT
-// ============================================================
 async function loadSalesReport() {
   const url = SALES_REPORT_URL + '?t=' + Date.now();
   const resp = await fetch(url);
@@ -533,18 +307,12 @@ async function loadSalesReport() {
   const wb = XLSX.read(buf, { type: 'array', cellDates: true });
   const sheet = wb.Sheets['Zero'];
   if (!sheet) throw new Error('No "Zero" tab found in Sales Report');
-  // Header is on row 3, data starts row 4
-  // Use sheet_to_json with header:1 to get raw rows.
   const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null, raw: true });
-  // Find header row by locating "Store Name"
   let headerRowIdx = -1;
   for (let i = 0; i < Math.min(aoa.length, 10); i++) {
-    if (aoa[i] && aoa[i][0] && String(aoa[i][0]).trim().toLowerCase() === 'store name') {
-      headerRowIdx = i; break;
-    }
+    if (aoa[i] && aoa[i][0] && String(aoa[i][0]).trim().toLowerCase() === 'store name') { headerRowIdx = i; break; }
   }
   if (headerRowIdx === -1) throw new Error('Could not locate header row in Zero tab');
-
   const myLower = new Set(MY_STORES.map(s => s.toLowerCase()));
   const out = {};
   for (let i = headerRowIdx + 1; i < aoa.length; i++) {
@@ -552,139 +320,100 @@ async function loadSalesReport() {
     if (!r || !r[0]) continue;
     const name = String(r[0]).trim();
     if (!myLower.has(name.toLowerCase())) continue;
-    // Match canonical casing from MY_STORES
     const canonical = MY_STORES.find(s => s.toLowerCase() === name.toLowerCase()) || name;
-    const mobile  = Number(r[2]) || 0;   // col C
-    const mcrRaw  = r[7];                // col H (0-1 fraction)
-    const traffic = Number(r[8]) || 0;   // col I
+    const mobile  = Number(r[2]) || 0;
+    const mcrRaw  = r[7];
+    const traffic = Number(r[8]) || 0;
     const mcr = (typeof mcrRaw === 'number') ? (mcrRaw <= 1 ? mcrRaw * 100 : mcrRaw) : null;
     out[canonical] = { store: canonical, traffic, mobile, mcr };
   }
   return out;
 }
 
-// ============================================================
-//  LOAD T-SHEET SUBMISSIONS, COUNT YESTERDAY PER STORE
-// ============================================================
 async function loadTSheetCounts() {
   const url = TSHEET_API_URL + '?t=' + Date.now();
   let resp;
-  try {
-    resp = await fetch(url, { method: 'GET' });
-  } catch (e) {
-    console.warn('T-Sheet fetch failed:', e);
-    return { counts: {}, date: null, ok: false };
-  }
-  if (!resp.ok) {
-    console.warn('T-Sheet API HTTP', resp.status);
-    return { counts: {}, date: null, ok: false };
-  }
+  try { resp = await fetch(url, { method: 'GET' }); }
+  catch (e) { return { counts: {}, date: null, ok: false }; }
+  if (!resp.ok) return { counts: {}, date: null, ok: false };
   const data = await resp.json();
   const subs = (data && data.submissions) || [];
   if (!subs.length) return { counts: {}, date: null, ok: false };
-
-  // Group by ISO date
   const byDate = {};
   for (const s of subs) {
-    const ts = s.timestamp;
-    if (!ts) continue;
+    const ts = s.timestamp; if (!ts) continue;
     const day = String(ts).slice(0, 10);
     if (!byDate[day]) byDate[day] = [];
     byDate[day].push(s);
   }
-
-  // Pick "yesterday": calendar yesterday if present, otherwise the most recent
-  // date in the data that has more than 30 submissions (i.e. a real day).
   const yISO = yesterdayISO();
   let useDate = null;
-  if (byDate[yISO]) {
-    useDate = yISO;
-  } else {
+  if (byDate[yISO]) useDate = yISO;
+  else {
     const dates = Object.keys(byDate).sort();
     for (let i = dates.length - 1; i >= 0; i--) {
       if (byDate[dates[i]].length >= 30) { useDate = dates[i]; break; }
     }
     if (!useDate && dates.length) useDate = dates[dates.length - 1];
   }
-
-  // Build store -> count map (using T-Sheet store name)
   const tsheetCounts = {};
   for (const s of byDate[useDate] || []) {
-    const name = s.store;
-    if (!name) continue;
-    tsheetCounts[name] = (tsheetCounts[name] || 0) + 1;
+    if (!s.store) continue;
+    tsheetCounts[s.store] = (tsheetCounts[s.store] || 0) + 1;
   }
-
-  // Map back to MY_STORES canonical names
   const counts = {};
   for (const myStore of MY_STORES) {
     const tname = TSHEET_NAME_BY_STORE[myStore] || (myStore + ' Xfinity Store');
     counts[myStore] = tsheetCounts[tname] || 0;
   }
-
   return { counts, date: useDate, ok: true };
 }
 
-// ============================================================
-//  MERGE + RENDER
-// ============================================================
 function buildRows(salesByStore, tsheetCounts) {
   const out = [];
   for (const store of MY_STORES) {
     const sales = salesByStore[store];
     const tcharts = tsheetCounts[store] || 0;
     if (!sales) {
-      // No row in Zero tab — push placeholder if T-Charts present, else skip
-      if (tcharts > 0) {
-        out.push({ store, traffic: 0, mobile: 0, mcr: null, tcharts, tpct: null });
-      }
+      if (tcharts > 0) out.push({ store, traffic: 0, mobile: 0, mcr: null, tcharts, tpct: null });
       continue;
     }
     const tpct = sales.traffic > 0 ? (tcharts / sales.traffic) * 100 : null;
-    out.push({
-      store,
-      traffic: sales.traffic,
-      mobile: sales.mobile,
-      mcr: sales.mcr,
-      tcharts,
-      tpct
-    });
+    out.push({ store, traffic: sales.traffic, mobile: sales.mobile, mcr: sales.mcr, tcharts, tpct });
   }
   return out;
 }
 
+function getFilteredRows() {
+  if (currentDistrict === 'all') return rows;
+  const dist = DISTRICTS.find(d => d.key === currentDistrict);
+  if (!dist) return rows;
+  const set = new Set(dist.stores);
+  return rows.filter(r => set.has(r.store));
+}
+
 function renderKPIs(rs) {
   let traffic = 0, mobile = 0, tcharts = 0;
-  for (const r of rs) {
-    traffic += (r.traffic || 0);
-    mobile  += (r.mobile  || 0);
-    tcharts += (r.tcharts || 0);
-  }
+  for (const r of rs) { traffic += (r.traffic || 0); mobile += (r.mobile || 0); tcharts += (r.tcharts || 0); }
   const avgMCR = traffic > 0 ? (mobile / traffic) * 100 : null;
   const tpct = traffic > 0 ? (tcharts / traffic) * 100 : null;
-
   document.getElementById('kTraffic').textContent = traffic.toLocaleString();
   document.getElementById('kMobile').textContent  = mobile.toLocaleString();
-  document.getElementById('kMCR').textContent     = pctText(avgMCR);
-  document.getElementById('kMCR').className       = 'kpi-value ' + (avgMCR != null ? pctClass(avgMCR,'mcr') : '');
+  const mcrEl = document.getElementById('kMCR');
+  mcrEl.textContent = pctText(avgMCR);
+  mcrEl.className = 'kpi-value ' + (avgMCR != null ? pctClass(avgMCR,'mcr') : '');
   document.getElementById('kTCharts').textContent = tcharts.toLocaleString();
-  document.getElementById('kTChartPct').textContent = pctText(tpct);
-  document.getElementById('kTChartPct').className   = 'kpi-value ' + (tpct != null ? pctClass(tpct,'tpct') : '');
-  document.getElementById('storeCount').textContent = rs.length;
+  const tpctEl = document.getElementById('kTChartPct');
+  tpctEl.textContent = pctText(tpct);
+  tpctEl.className = 'kpi-value ' + (tpct != null ? pctClass(tpct,'tpct') : '');
 }
 
 function sortRows(rs) {
   const sorted = rs.slice();
-  if (sortKey === 'rank') {
-    // rank = sorted by mcr desc by default
-    sorted.sort((a,b) => ((b.mcr ?? -1) - (a.mcr ?? -1)));
-    return sorted;
-  }
+  if (sortKey === 'rank') { sorted.sort((a,b) => ((b.mcr ?? -1) - (a.mcr ?? -1))); return sorted; }
   sorted.sort((a, b) => {
     let av = a[sortKey], bv = b[sortKey];
-    if (sortKey === 'store') {
-      return (String(av).localeCompare(String(bv))) * sortDir;
-    }
+    if (sortKey === 'store') return (String(av).localeCompare(String(bv))) * sortDir;
     if (av == null) av = -Infinity;
     if (bv == null) bv = -Infinity;
     return (av - bv) * sortDir;
@@ -692,54 +421,37 @@ function sortRows(rs) {
   return sorted;
 }
 
-function renderTable() {
-  const tbody = document.getElementById('storeBody');
-  const sorted = sortRows(rows);
+function rowHTML(r, rank) {
+  const rankCls = (rank <= 3 ? 'top' : '');
+  const mcrCls = pctClass(r.mcr, 'mcr');
+  const tpctCls = pctClass(r.tpct, 'tpct');
+  return '<tr>'
+    + '<td class="rank-cell ' + rankCls + '">' + rank + '</td>'
+    + '<td class="store-name">' + r.store + '</td>'
+    + '<td class="num">' + (r.traffic || 0).toLocaleString() + '</td>'
+    + '<td class="num">' + (r.mobile  || 0).toLocaleString() + '</td>'
+    + '<td class="num"><span class="pct-pill ' + mcrCls + '">' + pctText(r.mcr) + '</span></td>'
+    + '<td class="num">' + (r.tcharts || 0).toLocaleString() + '</td>'
+    + '<td class="num"><span class="pct-pill ' + tpctCls + '">' + pctText(r.tpct) + '</span></td>'
+    + '</tr>';
+}
 
-  // Compute display rank by MCR descending (independent of sortKey)
-  const byMcr = rows.slice().sort((a,b) => ((b.mcr ?? -1) - (a.mcr ?? -1)));
+function renderTable() {
+  const visible = getFilteredRows();
+  const sorted = sortRows(visible);
+  const byMcr = visible.slice().sort((a,b) => ((b.mcr ?? -1) - (a.mcr ?? -1)));
   const rankByStore = {};
   byMcr.forEach((r,i) => { rankByStore[r.store] = i + 1; });
 
-  let html = '';
-  for (const r of sorted) {
-    const rank = rankByStore[r.store];
-    const rankCls = (rank <= 3 ? 'top' : '');
-    const mcrCls = pctClass(r.mcr, 'mcr');
-    const tpctCls = pctClass(r.tpct, 'tpct');
-    html += '<tr>'
-      + '<td class="rank-cell ' + rankCls + '">' + rank + '</td>'
-      + '<td class="store-name">' + r.store + '</td>'
-      + '<td class="num">' + (r.traffic || 0).toLocaleString() + '</td>'
-      + '<td class="num">' + (r.mobile  || 0).toLocaleString() + '</td>'
-      + '<td class="num"><span class="pct-pill ' + mcrCls + '">' + pctText(r.mcr) + '</span></td>'
-      + '<td class="num">' + (r.tcharts || 0).toLocaleString() + '</td>'
-      + '<td class="num"><span class="pct-pill ' + tpctCls + '">' + pctText(r.tpct) + '</span></td>'
-      + '</tr>';
-  }
+  const half = Math.ceil(sorted.length / 2);
+  const left = sorted.slice(0, half);
+  const right = sorted.slice(half);
 
-  // Total row
-  let tTraffic = 0, tMobile = 0, tCharts = 0;
-  for (const r of rows) {
-    tTraffic += (r.traffic || 0);
-    tMobile  += (r.mobile  || 0);
-    tCharts  += (r.tcharts || 0);
-  }
-  const totalMCR = tTraffic > 0 ? (tMobile / tTraffic) * 100 : null;
-  const totalTPct = tTraffic > 0 ? (tCharts / tTraffic) * 100 : null;
-  html += '<tr class="total-row">'
-    + '<td></td>'
-    + '<td>TOTAL</td>'
-    + '<td class="num">' + tTraffic.toLocaleString() + '</td>'
-    + '<td class="num">' + tMobile.toLocaleString() + '</td>'
-    + '<td class="num"><span class="pct-pill ' + pctClass(totalMCR,'mcr') + '">' + pctText(totalMCR) + '</span></td>'
-    + '<td class="num">' + tCharts.toLocaleString() + '</td>'
-    + '<td class="num"><span class="pct-pill ' + pctClass(totalTPct,'tpct') + '">' + pctText(totalTPct) + '</span></td>'
-    + '</tr>';
+  document.getElementById('storeBodyL').innerHTML = left.map(r => rowHTML(r, rankByStore[r.store])).join('');
+  document.getElementById('storeBodyR').innerHTML = right.map(r => rowHTML(r, rankByStore[r.store])).join('');
+  document.getElementById('storeCountL').textContent = left.length;
+  document.getElementById('storeCountR').textContent = right.length;
 
-  tbody.innerHTML = html;
-
-  // Update sort indicator
   document.querySelectorAll('.store-table th').forEach(th => {
     th.classList.remove('sorted');
     const ar = th.querySelector('.arrow');
@@ -752,53 +464,40 @@ function renderTable() {
 }
 
 function setSort(key) {
-  if (sortKey === key) {
-    sortDir = -sortDir;
-  } else {
-    sortKey = key;
-    sortDir = (key === 'store') ? 1 : -1;
-  }
+  if (sortKey === key) sortDir = -sortDir;
+  else { sortKey = key; sortDir = (key === 'store') ? 1 : -1; }
   renderTable();
 }
 
-// ============================================================
-//  ORCHESTRATION
-// ============================================================
+function setDistrict(key) {
+  currentDistrict = key;
+  document.querySelectorAll('.dt-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.key === key);
+  });
+  renderKPIs(getFilteredRows());
+  renderTable();
+}
+
 async function loadAll() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
   btn.disabled = true;
-
   document.getElementById('errorMsg').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
   document.getElementById('content').style.display = 'none';
-
   try {
-    const [salesByStore, tsheet] = await Promise.all([
-      loadSalesReport(),
-      loadTSheetCounts()
-    ]);
-
+    const [salesByStore, tsheet] = await Promise.all([loadSalesReport(), loadTSheetCounts()]);
     rows = buildRows(salesByStore, tsheet.counts);
-
-    // Date pill: show the T-Sheet date if we got one (most accurate),
-    // else calendar yesterday.
     let displayDate;
     if (tsheet.date) {
       const [y,m,d] = tsheet.date.split('-').map(Number);
       displayDate = new Date(y, m-1, d);
-    } else {
-      const dd = new Date();
-      dd.setDate(dd.getDate() - 1);
-      displayDate = dd;
-    }
+    } else { const dd = new Date(); dd.setDate(dd.getDate() - 1); displayDate = dd; }
     yesterdayDate = displayDate;
     document.getElementById('dateBadge').textContent = fmtDate(displayDate);
-
-    renderKPIs(rows);
+    renderKPIs(getFilteredRows());
     renderTable();
     document.getElementById('lastUpdated').textContent = fmtTime(new Date());
-
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
   } catch (e) {
@@ -813,25 +512,22 @@ async function loadAll() {
   }
 }
 
-// Wire sort handlers
 document.querySelectorAll('.store-table th').forEach(th => {
   th.addEventListener('click', () => setSort(th.dataset.key));
 });
+document.querySelectorAll('.dt-tab').forEach(btn => {
+  btn.addEventListener('click', () => setDistrict(btn.dataset.key));
+});
 
-// Logo: load lazily from inline data-uri on load (set in build script after this base file)
-// We keep the HTML lean by NOT inlining the 3KB logo here in the source — instead it's set at runtime.
-// (Build step fills in the constant below.)
 const LOGO_DATA_URI = 'data:image/jpeg;base64,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';
 if (LOGO_DATA_URI && LOGO_DATA_URI !== 'data:image/jpeg;base64,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') {
   document.getElementById('logoImg').src = LOGO_DATA_URI;
 } else {
   document.getElementById('logoImg').alt = 'C³';
   document.getElementById('logoImg').style.display = 'none';
-  document.getElementById('logoImg').parentElement.innerHTML
-    = '<span style="font-weight:900;color:var(--orange);font-size:22px;letter-spacing:1px">C&#179;</span>';
+  document.getElementById('logoImg').parentElement.innerHTML = '<span style="font-weight:900;color:var(--orange);font-size:18px;letter-spacing:1px">C&#179;</span>';
 }
 
-// Auto-refresh every 5 minutes
 setInterval(loadAll, 5 * 60 * 1000);
 loadAll();
 </script>
