@@ -93,8 +93,13 @@
 
   /* STORE TABLES */
   .table-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .table-grid.single { grid-template-columns: 1fr; max-width: 1100px; margin: 0 auto; }
+  .table-grid.single { grid-template-columns: 1fr; max-width: 760px; margin: 0 auto; }
   .table-grid.single .panel-r { display: none; }
+  /* In single-column mode, the table sizes itself to its content and centers
+     in the panel so screenshots have no wasted horizontal space. */
+  .table-grid.single .store-table { width: auto; margin: 0 auto; table-layout: auto; }
+  .table-grid.single .store-table th.col-store,
+  .table-grid.single .store-table td.col-store { padding-right: 28px; white-space: nowrap; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   .panel-head { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, var(--panel-2) 0%, var(--panel) 100%); }
   .panel-title { font-size: 12px; font-weight: 800; letter-spacing: 1.4px; color: var(--ink); }
