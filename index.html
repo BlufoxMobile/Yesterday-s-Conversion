@@ -150,6 +150,20 @@
   .pct-pill.bad  { background: var(--bad-bg);  color: var(--bad); }
   .pct-pill.muted { background: var(--line); color: var(--ink-dim); }
 
+  /* District totals row */
+  .store-table tr.total-row td {
+    background: var(--panel-2);
+    border-top: 2px solid var(--orange);
+    border-bottom: none;
+    font-weight: 800;
+    font-size: 12.5px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding-top: 10px; padding-bottom: 10px;
+  }
+  .store-table tr.total-row td.col-store { color: var(--orange); }
+  .store-table tr.total-row:hover td { background: var(--panel-2); }
+
   .footer { text-align: center; color: var(--ink-dim); font-size: 11px; margin-top: 12px; letter-spacing: 0.4px; }
   .footer a { color: var(--orange); text-decoration: none; }
   .footer a:hover { text-decoration: underline; }
@@ -454,6 +468,28 @@ function rowHTML(r, rank) {
     + '</tr>';
 }
 
+function totalRowHTML(rs, label) {
+  let traffic = 0, mobile = 0, tcharts = 0;
+  for (const r of rs) {
+    traffic += (r.traffic || 0);
+    mobile  += (r.mobile  || 0);
+    tcharts += (r.tcharts || 0);
+  }
+  const mcr  = traffic > 0 ? (mobile  / traffic) * 100 : null;
+  const tpct = traffic > 0 ? (tcharts / traffic) * 100 : null;
+  const mcrCls  = pctClass(mcr,  'mcr');
+  const tpctCls = pctClass(tpct, 'tpct');
+  return '<tr class="total-row">'
+    + '<td class="col-rank"></td>'
+    + '<td class="col-store">' + label + '</td>'
+    + '<td class="col-traffic num">' + traffic.toLocaleString() + '</td>'
+    + '<td class="col-mobile num">'  + mobile.toLocaleString()  + '</td>'
+    + '<td class="col-mcr num"><span class="pct-pill ' + mcrCls + '">' + pctText(mcr) + '</span></td>'
+    + '<td class="col-tcharts num">' + tcharts.toLocaleString() + '</td>'
+    + '<td class="col-tpct num"><span class="pct-pill ' + tpctCls + '">' + pctText(tpct) + '</span></td>'
+    + '</tr>';
+}
+
 function renderTable() {
   const visible = getFilteredRows();
   const sorted = sortRows(visible);
@@ -469,7 +505,14 @@ function renderTable() {
   grid.classList.toggle('single', useSingle);
 
   if (useSingle) {
-    document.getElementById('storeBodyL').innerHTML = sorted.map(r => rowHTML(r, rankByStore[r.store])).join('');
+    let bodyHtml = sorted.map(r => rowHTML(r, rankByStore[r.store])).join('');
+    // Append district total row when viewing a single district
+    if (currentDistrict !== 'all') {
+      const dist = DISTRICTS.find(d => d.key === currentDistrict);
+      const label = dist ? (dist.name.toUpperCase() + ' TOTAL') : 'DISTRICT TOTAL';
+      bodyHtml += totalRowHTML(visible, label);
+    }
+    document.getElementById('storeBodyL').innerHTML = bodyHtml;
     document.getElementById('storeBodyR').innerHTML = '';
     document.getElementById('storeCountL').textContent = sorted.length;
     document.getElementById('storeCountR').textContent = 0;
