@@ -309,8 +309,10 @@ function fmtTime(d) {
 }
 function pctClass(p, type) {
   if (p == null || isNaN(p)) return 'muted';
-  if (type === 'tpct') { if (p >= 8) return 'good'; if (p >= 4) return 'warn'; return 'bad'; }
-  if (p >= 10) return 'good'; if (p >= 6) return 'warn'; return 'bad';
+  // T-Chart % (T-Sheets): >20% good, >=15% warn, <15% bad
+  if (type === 'tpct') { if (p > 20) return 'good'; if (p >= 15) return 'warn'; return 'bad'; }
+  // Mobile Conversion (MCR %): >7% good, >=6% warn, <6% bad
+  if (p > 7) return 'good'; if (p >= 6) return 'warn'; return 'bad';
 }
 function pctText(p) { if (p == null || isNaN(p)) return '—'; return p.toFixed(1) + '%'; }
 function yesterdayISO() { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0,10); }
