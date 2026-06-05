@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yesterday's Conversion - Cook County Cooks</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://blufoxmobile.github.io/Daily-Sales-Report/store-aliases.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -351,8 +352,8 @@ async function loadSalesReport() {
     const r = aoa[i];
     if (!r || !r[0]) continue;
     const name = String(r[0]).trim();
-    if (!myLower.has(name.toLowerCase())) continue;
-    const canonical = MY_STORES.find(s => s.toLowerCase() === name.toLowerCase()) || name;
+    const canonical = (window.BLUFOX_STORES ? window.BLUFOX_STORES.normalizeStore(name) : name);
+    if (!(window.BLUFOX_STORES ? window.BLUFOX_STORES.isMyStore(canonical) : myLower.has(name.toLowerCase()))) continue;
     const mobile  = Number(r[2]) || 0;
     const mcrRaw  = r[7];
     const traffic = Number(r[8]) || 0;
@@ -395,7 +396,7 @@ async function loadTSheetCounts() {
   }
   const counts = {};
   for (const myStore of MY_STORES) {
-    const tname = TSHEET_NAME_BY_STORE[myStore] || (myStore + ' Xfinity Store');
+    const tname = (window.BLUFOX_STORES ? window.BLUFOX_STORES.xfinityStoreName(myStore) : (TSHEET_NAME_BY_STORE[myStore] || (myStore + ' Xfinity Store')));
     counts[myStore] = tsheetCounts[tname] || 0;
   }
   return { counts, date: useDate, ok: true };
