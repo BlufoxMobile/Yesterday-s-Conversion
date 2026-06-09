@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yesterday's Conversion - Cook County Cooks</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://blufoxmobile.github.io/Daily-Sales-Report/store-aliases.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -291,9 +290,41 @@ const TSHEET_API_URL   = 'https://script.google.com/macros/s/AKfycbyQaa1yvggLJuw
 
 const MY_STORES = ['Bourbonnais','Burbank','Calumet City','Cicero','Dekalb','Elkhart','Evanston','Evergreen Park','Frankfort','Glenview','Greeneville','Hammond','Johnson City','Kildeer','Michigan City','Oak Ridge','Round Lake Beach','Schererville','South Bend','South Knoxville','South Skokie','Tinley Park','Uptown','Valparaiso'];
 
-const TSHEET_NAME_BY_STORE = {
-  'Bourbonnais':'Bourbonnais Xfinity Store','Burbank':'Burbank Xfinity Store','Calumet City':'Calumet City Xfinity Store','Cicero':'Cicero Xfinity Store','Dekalb':'Dekalb Xfinity Store','Elkhart':'Elkhart Xfinity Store','Evanston':'Evanston Xfinity Store','Evergreen Park':'Evergreen Park Xfinity Store','Frankfort':'Frankfort Xfinity Store','Glenview':'Glenview Xfinity Store','Greeneville':'Greeneville Xfinity Store','Hammond':'Hammond Xfinity Store','Johnson City':'Johnson City Xfinity Store','Kildeer':'Kildeer Xfinity Store','Michigan City':'Michigan City Xfinity Store','Oak Ridge':'Oak Ridge Xfinity Store','Round Lake Beach':'Round Lake Beach Xfinity Store','Schererville':'Schererville Xfinity Store','South Bend':'South Bend Xfinity Store','South Knoxville':'South Knoxville Xfinity Store','South Skokie':'Skokie Xfinity Store','Tinley Park':'Tinley Park Xfinity Store','Uptown':'Uptown Xfinity Store','Valparaiso':'Valparaiso Xfinity Store'
+// ---------------------------------------------------------------------------
+// STORE NAME NORMALIZATION
+// T-Sheet submissions can arrive under several name variants for the same store:
+//   - a short nickname        ("Skokie", "South Skokie")
+//   - the full canonical name ("Skokie Xfinity Store", "South Skokie Xfinity Store")
+// Rather than relying on one exact string match (which silently dropped
+// submissions whose store label didn't match character-for-character — e.g.
+// South Skokie), we normalize EVERY incoming submission down to one of the
+// canonical short names in MY_STORES. That way nicknames and full names both
+// register, for every store.
+//
+// STORE_ALIASES maps any odd-ball variant (after stripping the
+// " Xfinity Store" suffix and lower-casing) to its canonical MY_STORES entry.
+// Add a line here whenever a store starts submitting under a new label.
+const STORE_ALIASES = {
+  'skokie':       'South Skokie',
+  'south skokie': 'South Skokie'
 };
+
+// Lower-cased lookup of the canonical short names for fast exact matching.
+const CANONICAL_BY_LOWER = {};
+MY_STORES.forEach(s => { CANONICAL_BY_LOWER[s.toLowerCase()] = s; });
+
+// Turn any raw submission store label into a canonical MY_STORES name,
+// or null if it isn't one of our stores.
+function canonicalStore(raw) {
+  if (!raw) return null;
+  let name = String(raw).trim();
+  // Drop a trailing " Xfinity Store" (any casing / spacing).
+  name = name.replace(/\s+xfinity\s+store\s*$/i, '').trim();
+  const key = name.toLowerCase();
+  if (STORE_ALIASES[key]) return STORE_ALIASES[key];   // known variant
+  if (CANONICAL_BY_LOWER[key]) return CANONICAL_BY_LOWER[key]; // direct match
+  return null; // not one of our 24 stores
+}
 
 const DISTRICTS = [
   { key:'big-south',  name:'Big South',  dm:'Matthew Brooks',     stores:['Greeneville','Johnson City','Oak Ridge','South Knoxville'] },
@@ -346,14 +377,14 @@ async function loadSalesReport() {
     if (aoa[i] && aoa[i][0] && String(aoa[i][0]).trim().toLowerCase() === 'store name') { headerRowIdx = i; break; }
   }
   if (headerRowIdx === -1) throw new Error('Could not locate header row in Zero tab');
-  const myLower = new Set(MY_STORES.map(s => s.toLowerCase()));
   const out = {};
   for (let i = headerRowIdx + 1; i < aoa.length; i++) {
     const r = aoa[i];
     if (!r || !r[0]) continue;
-    const name = String(r[0]).trim();
-    const canonical = (window.BLUFOX_STORES ? window.BLUFOX_STORES.normalizeStore(name) : name);
-    if (!(window.BLUFOX_STORES ? window.BLUFOX_STORES.isMyStore(canonical) : myLower.has(name.toLowerCase()))) continue;
+    // Normalize the Sales Report store label the same way we normalize T-Sheet
+    // submissions, so both sides land on the same canonical MY_STORES name.
+    const canonical = canonicalStore(r[0]);
+    if (!canonical) continue;
     const mobile  = Number(r[2]) || 0;
     const mcrRaw  = r[7];
     const traffic = Number(r[8]) || 0;
@@ -389,15 +420,14 @@ async function loadTSheetCounts() {
     }
     if (!useDate && dates.length) useDate = dates[dates.length - 1];
   }
-  const tsheetCounts = {};
-  for (const s of byDate[useDate] || []) {
-    if (!s.store) continue;
-    tsheetCounts[s.store] = (tsheetCounts[s.store] || 0) + 1;
-  }
+  // Count submissions per store by NORMALIZING each submission's store label
+  // to a canonical MY_STORES name. Any nickname / full-name variant that maps
+  // to one of our 24 stores now gets counted (this is what fixes South Skokie).
   const counts = {};
-  for (const myStore of MY_STORES) {
-    const tname = (window.BLUFOX_STORES ? window.BLUFOX_STORES.xfinityStoreName(myStore) : (TSHEET_NAME_BY_STORE[myStore] || (myStore + ' Xfinity Store')));
-    counts[myStore] = tsheetCounts[tname] || 0;
+  for (const myStore of MY_STORES) counts[myStore] = 0;
+  for (const s of byDate[useDate] || []) {
+    const cs = canonicalStore(s.store);
+    if (cs && Object.prototype.hasOwnProperty.call(counts, cs)) counts[cs] += 1;
   }
   return { counts, date: useDate, ok: true };
 }
