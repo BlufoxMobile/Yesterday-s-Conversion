@@ -305,9 +305,18 @@ const MY_STORES = ['Bourbonnais','Burbank','Calumet City','Cicero','Dekalb','Elk
 // STORE_ALIASES maps any odd-ball variant (after stripping the
 // " Xfinity Store" suffix and lower-casing) to its canonical MY_STORES entry.
 // Add a line here whenever a store starts submitting under a new label.
+// Keys are INPUT spellings (lower-cased, suffix already stripped); every value
+// is a canonical MY_STORES short name. Matches store-aliases.js v2.
 const STORE_ALIASES = {
-  'skokie':       'South Skokie',
-  'south skokie': 'South Skokie'
+  'skokie':        'South Skokie',
+  's. skokie':     'South Skokie',
+  's skokie':      'South Skokie',
+  'south skokie':  'South Skokie',
+  'knoxville':     'South Knoxville',
+  's. knoxville':  'South Knoxville',
+  's knoxville':   'South Knoxville',
+  'n. knoxville':  'North Knoxville',
+  'n knoxville':   'North Knoxville'
 };
 
 // Lower-cased lookup of the canonical short names for fast exact matching.
