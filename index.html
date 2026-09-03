@@ -4,10 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yesterday's Conversion - Cook County Cooks</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Perf (2026-09-02): `defer` so the 316 KB SheetJS download no longer blocks
+     parsing and the workbook fetch starts in parallel with it; a hung cdnjs
+     used to leave the page blank. loadSalesReport() waits for DOMContentLoaded
+     before XLSX.read in case the workbook arrives first. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Perf (2026-09-02): non-render-blocking font load (media="print" + onload
+     swap) so fonts.googleapis.com can never hold up first paint. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   :root {
     --bg: #080e1a;
@@ -379,6 +385,13 @@ async function loadSalesReport() {
   const resp = await fetch(url);
   if (!resp.ok) throw new Error('Sales Report fetch failed: HTTP ' + resp.status);
   const buf = await resp.arrayBuffer();
+  // Perf (2026-09-02): SheetJS is deferred (see <head>). Deferred scripts run
+  // while readyState is already 'interactive' and DOMContentLoaded fires after
+  // they finish, so wait for DOMContentLoaded (or load, if the CDN script
+  // failed and DOMContentLoaded already went by) unless the page is complete.
+  if (typeof XLSX === 'undefined' && document.readyState !== 'complete') {
+    await new Promise(r => { document.addEventListener('DOMContentLoaded', r, { once: true }); window.addEventListener('load', r, { once: true }); });
+  }
   const wb = XLSX.read(buf, { type: 'array', cellDates: true });
   const sheet = wb.Sheets['Zero'];
   if (!sheet) throw new Error('No "Zero" tab found in Sales Report');
@@ -407,11 +420,20 @@ async function loadSalesReport() {
 
 async function loadTSheetCounts() {
   const url = TSHEET_API_URL + '?t=' + Date.now();
+  // Perf (2026-09-02): fetched with NO timeout before, so a hung Apps Script
+  // call left the page on "Loading data..." forever. Measured 2026-09-02: a
+  // normal answer takes 12.7-16.7 s (~2.3 MB), so the cap must sit well above
+  // that - 45 s only ends a hung call. The page no longer waits for this call
+  // to show the sales side (see loadAll); on abort the T-Chart columns fall
+  // back to 0, exactly as a failed call already did.
+  const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const killer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 45000);
   let resp;
-  try { resp = await fetch(url, { method: 'GET' }); }
-  catch (e) { return { counts: {}, date: null, ok: false }; }
-  if (!resp.ok) return { counts: {}, date: null, ok: false };
-  const data = await resp.json();
+  try { resp = await fetch(url, { method: 'GET', signal: ctrl ? ctrl.signal : undefined }); }
+  catch (e) { clearTimeout(killer); return { counts: {}, date: null, ok: false }; }
+  if (!resp.ok) { clearTimeout(killer); return { counts: {}, date: null, ok: false }; }
+  const data = await resp.json().catch(() => null);
+  clearTimeout(killer);
   const subs = (data && data.submissions) || [];
   if (!subs.length) return { counts: {}, date: null, ok: false };
   const byDate = {};
@@ -447,12 +469,14 @@ function buildRows(salesByStore, tsheetCounts) {
   const out = [];
   for (const store of MY_STORES) {
     const sales = salesByStore[store];
-    const tcharts = tsheetCounts[store] || 0;
+    // Perf (2026-09-02): tsheetCounts === null means the T-Sheet feed is still
+    // in flight; tcharts/tpct stay null and render as "—" until it lands.
+    const tcharts = tsheetCounts ? (tsheetCounts[store] || 0) : null;
     if (!sales) {
       if (tcharts > 0) out.push({ store, traffic: 0, mobile: 0, mcr: null, tcharts, tpct: null });
       continue;
     }
-    const tpct = sales.traffic > 0 ? (tcharts / sales.traffic) * 100 : null;
+    const tpct = (tcharts != null && sales.traffic > 0) ? (tcharts / sales.traffic) * 100 : null;
     out.push({ store, traffic: sales.traffic, mobile: sales.mobile, mcr: sales.mcr, tcharts, tpct });
   }
   return out;
@@ -469,14 +493,16 @@ function getFilteredRows() {
 function renderKPIs(rs) {
   let traffic = 0, mobile = 0, tcharts = 0;
   for (const r of rs) { traffic += (r.traffic || 0); mobile += (r.mobile || 0); tcharts += (r.tcharts || 0); }
+  // Perf (2026-09-02): T-Sheet counts still loading -> "—" instead of a false 0.
+  const tPending = rs.some(r => r.tcharts == null);
   const avgMCR = traffic > 0 ? (mobile / traffic) * 100 : null;
-  const tpct = traffic > 0 ? (tcharts / traffic) * 100 : null;
+  const tpct = (!tPending && traffic > 0) ? (tcharts / traffic) * 100 : null;
   document.getElementById('kTraffic').textContent = traffic.toLocaleString();
   document.getElementById('kMobile').textContent  = mobile.toLocaleString();
   const mcrEl = document.getElementById('kMCR');
   mcrEl.textContent = pctText(avgMCR);
   mcrEl.className = 'kpi-value ' + (avgMCR != null ? pctClass(avgMCR,'mcr') : '');
-  document.getElementById('kTCharts').textContent = tcharts.toLocaleString();
+  document.getElementById('kTCharts').textContent = tPending ? '—' : tcharts.toLocaleString();
   const tpctEl = document.getElementById('kTChartPct');
   tpctEl.textContent = pctText(tpct);
   tpctEl.className = 'kpi-value ' + (tpct != null ? pctClass(tpct,'tpct') : '');
@@ -505,7 +531,7 @@ function rowHTML(r, rank) {
     + '<td class="col-traffic num">' + (r.traffic || 0).toLocaleString() + '</td>'
     + '<td class="col-mobile num">' + (r.mobile  || 0).toLocaleString() + '</td>'
     + '<td class="col-mcr num"><span class="pct-pill ' + mcrCls + '">' + pctText(r.mcr) + '</span></td>'
-    + '<td class="col-tcharts num">' + (r.tcharts || 0).toLocaleString() + '</td>'
+    + '<td class="col-tcharts num">' + (r.tcharts == null ? '—' : (r.tcharts || 0).toLocaleString()) + '</td>'
     + '<td class="col-tpct num"><span class="pct-pill ' + tpctCls + '">' + pctText(r.tpct) + '</span></td>'
     + '</tr>';
 }
@@ -517,8 +543,9 @@ function totalRowHTML(rs, label) {
     mobile  += (r.mobile  || 0);
     tcharts += (r.tcharts || 0);
   }
+  const tPending = rs.some(r => r.tcharts == null); // Perf (2026-09-02): feed still loading
   const mcr  = traffic > 0 ? (mobile  / traffic) * 100 : null;
-  const tpct = traffic > 0 ? (tcharts / traffic) * 100 : null;
+  const tpct = (!tPending && traffic > 0) ? (tcharts / traffic) * 100 : null;
   const mcrCls  = pctClass(mcr,  'mcr');
   const tpctCls = pctClass(tpct, 'tpct');
   return '<tr class="total-row">'
@@ -527,7 +554,7 @@ function totalRowHTML(rs, label) {
     + '<td class="col-traffic num">' + traffic.toLocaleString() + '</td>'
     + '<td class="col-mobile num">'  + mobile.toLocaleString()  + '</td>'
     + '<td class="col-mcr num"><span class="pct-pill ' + mcrCls + '">' + pctText(mcr) + '</span></td>'
-    + '<td class="col-tcharts num">' + tcharts.toLocaleString() + '</td>'
+    + '<td class="col-tcharts num">' + (tPending ? '—' : tcharts.toLocaleString()) + '</td>'
     + '<td class="col-tpct num"><span class="pct-pill ' + tpctCls + '">' + pctText(tpct) + '</span></td>'
     + '</tr>';
 }
@@ -612,7 +639,24 @@ async function loadAll() {
   document.getElementById('loading').style.display = 'block';
   document.getElementById('content').style.display = 'none';
   try {
-    const [salesByStore, tsheet] = await Promise.all([loadSalesReport(), loadTSheetCounts()]);
+    // Perf (2026-09-02): this used to be Promise.all([sales, tsheets]) so the
+    // whole page hid behind "Loading data..." until the T-Sheet Apps Script
+    // feed answered (12.7-16.7 s normally, forever when it hung). Now the
+    // sales side renders as soon as the workbook is parsed, with "—" in the
+    // T-Chart columns, and the counts fill in when the feed lands. Measured
+    // time-to-table with the feed at 13 s: LTE 13.9 s -> 1.9 s, fast-3G
+    // 18.1 s -> 9.3 s; feed hung: never -> 2.1 s.
+    const tsheetReq = loadTSheetCounts();           // starts now, resolves later
+    const salesByStore = await loadSalesReport();
+    const yd = new Date(); yd.setDate(yd.getDate() - 1);
+    rows = buildRows(salesByStore, null);           // null = counts pending
+    yesterdayDate = yd;
+    document.getElementById('dateBadge').textContent = fmtDate(yd);
+    renderKPIs(getFilteredRows());
+    renderTable();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    const tsheet = await tsheetReq;
     rows = buildRows(salesByStore, tsheet.counts);
     let displayDate;
     if (tsheet.date) {
@@ -624,8 +668,6 @@ async function loadAll() {
     renderKPIs(getFilteredRows());
     renderTable();
     document.getElementById('lastUpdated').textContent = fmtTime(new Date());
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
   } catch (e) {
     console.error(e);
     document.getElementById('loading').style.display = 'none';
