@@ -691,13 +691,38 @@ function setDistrict(key) {
   renderTable();
 }
 
-async function loadAll() {
+// Perf (2026-09-24): cookcountycooks.com's tool viewer keeps its lid over this
+// frame until it hears the page has drawn (or `load`, whichever is first).
+// No-op when the page is not framed; sent once.
+let paintedPosted = false;
+function postPainted() {
+  if (paintedPosted) return;
+  paintedPosted = true;
+  try { if (window.parent !== window) window.parent.postMessage({ source: 'ccc-tool', state: 'painted' }, '*'); } catch (e) {}
+}
+
+// Perf (2026-09-24): `isBackground` = the 5-minute timer. It used to blank the
+// table ("Loading data..."), so the rep lost the table and their scroll
+// position every 5 minutes. A background refresh now leaves the table up and
+// redraws it once when both sides are in; it is skipped while the tab is
+// hidden or a refresh is still running, and one whose T-Sheet feed failed
+// leaves real T-Chart counts on screen instead of replacing them with zeros.
+// Only a table that is actually up is kept: after a failed load the timer
+// shows "Loading data..." and recovers exactly as before.
+let shownTsheetOk = false;
+let loadAllBusy = false;
+async function loadAll(isBackground) {
+  if (isBackground === true && (document.hidden || loadAllBusy)) return;
+  const bg = isBackground === true && document.getElementById('content').style.display === 'block';
+  loadAllBusy = true;
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
   btn.disabled = true;
+  if (!bg) {
   document.getElementById('errorMsg').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
   document.getElementById('content').style.display = 'none';
+  }
   try {
     // Perf (2026-09-02): this used to be Promise.all([sales, tsheets]) so the
     // whole page hid behind "Loading data..." until the T-Sheet Apps Script
@@ -709,6 +734,7 @@ async function loadAll() {
     const tsheetReq = loadTSheetCounts();           // starts now, resolves later
     const salesByStore = await loadSalesReport();
     const yd = new Date(); yd.setDate(yd.getDate() - 1);
+    if (!bg) {                                      // Perf (2026-09-24): background keeps the table up
     rows = buildRows(salesByStore, null);           // null = counts pending
     yesterdayDate = yd;
     document.getElementById('dateBadge').textContent = fmtDate(yd);
@@ -716,7 +742,12 @@ async function loadAll() {
     renderTable();
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = 'block';
+    postPainted();                                  // Perf (2026-09-24): first real content is up
+    }
     const tsheet = await tsheetReq;
+    // Perf (2026-09-24): see loadAll's note - keep real counts over a failed background feed.
+    if (bg && !tsheet.ok && shownTsheetOk) return;
+    shownTsheetOk = !!tsheet.ok;
     rows = buildRows(salesByStore, tsheet.counts);
     let displayDate;
     if (tsheet.date) {
@@ -730,11 +761,15 @@ async function loadAll() {
     document.getElementById('lastUpdated').textContent = fmtTime(new Date());
   } catch (e) {
     console.error(e);
+    // Perf (2026-09-24): a failed background refresh leaves the last good table up.
+    if (bg) return;
     document.getElementById('loading').style.display = 'none';
     const em = document.getElementById('errorMsg');
     em.style.display = 'block';
     em.textContent = 'Could not load data: ' + (e.message || e);
+    postPainted();                                  // Perf (2026-09-24): the error is what there is to show
   } finally {
+    loadAllBusy = false;
     btn.classList.remove('spinning');
     btn.disabled = false;
   }
@@ -756,7 +791,7 @@ if (LOGO_DATA_URI && LOGO_DATA_URI !== 'data:image/jpeg;base64,/9j/4AAQSkZJRgABA
   document.getElementById('logoImg').parentElement.innerHTML = '<span style="font-weight:900;color:var(--orange);font-size:18px;letter-spacing:1px">C&#179;</span>';
 }
 
-setInterval(loadAll, 5 * 60 * 1000);
+setInterval(() => loadAll(true), 5 * 60 * 1000);   // Perf (2026-09-24): background refresh, see loadAll
 loadAll();
 </script>
 </body>
