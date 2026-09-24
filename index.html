@@ -795,7 +795,10 @@ async function loadAll(isBackground) {
     // Perf (2026-09-24): see loadAll's note - keep real counts over a failed background feed.
     if (bg && !tsheet.ok && shownTsheetOk) return;
     shownTsheetOk = !!tsheet.ok;
-    rows = buildRows(salesByStore, tsheet.counts);
+    // Perf (2026-09-24): a failed T-Sheet feed used to fill T-Charts with 0 and
+    // T-Chart % with 0.0% for every store, which read as real numbers. Those
+    // columns now stay "—" (as while loading) until a refresh gets the counts.
+    rows = buildRows(salesByStore, tsheet.ok ? tsheet.counts : null);
     let displayDate;
     if (tsheet.date) {
       const [y,m,d] = tsheet.date.split('-').map(Number);
